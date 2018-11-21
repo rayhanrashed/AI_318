@@ -94,7 +94,7 @@ public class State {
 //            System.out.print(arr[i] +" ");
 //        }
         int invc = getInvCount(arr, this.size*this.size);
-        System.out.println(invc);
+        //System.out.println(invc);
         return invc;
     }
 
@@ -114,7 +114,7 @@ public class State {
     @Override
     public int hashCode()
     {
-        return 10;
+        return CountInversionHelper();
     }
     
     void printstate()
