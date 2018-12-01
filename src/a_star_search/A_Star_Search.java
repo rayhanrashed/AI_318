@@ -7,6 +7,7 @@ package a_star_search;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -33,9 +34,27 @@ public class A_Star_Search {
                 matrix[i][j] = in.nextInt();
             }
         }
-        for (int i = 2; i <= 2; i++) {
+        
+        for (int i = 3; i >= 1; i--) {
+            
+            System.out.print("Using  Heuristics: ");
+            if(i==3)
+            {
+                System.out.println("Linear Conflicts\n\n");
+            }
+            else if(i==2)
+            {
+                System.out.println("Manhattan Distance\n\n");                
+            }
+            else
+            {
+                System.out.println("Hamming Distance\n\n");                
+            }
             Search_Runner sr = new Search_Runner(matrix, n);
             sr.heuristics_index=i;
+            State s=new State(sr.initialState.matrix,n);
+            System.out.println(s.hashCode());
+            System.out.println(sr.initialState.hashCode());
             Node Result = sr.Search();
             if (Result == null) {
                 System.out.println("There");

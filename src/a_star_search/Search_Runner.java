@@ -5,10 +5,10 @@
  */
 package a_star_search;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.PriorityQueue;
 import java.util.Stack;
-import javax.naming.spi.DirStateFactory;
 
 /**
  *
@@ -26,6 +26,7 @@ public class Search_Runner {
        int tempy,posy;
        int []dx={1,-1,0,0};
        int []dy={0,0,1,-1};
+       HashSet<State> HashingSet;
        Hashtable<State, Integer> OpenList;
        Hashtable<State, Integer> CloseList;
        PriorityQueue<Node> priorityQueue;
@@ -35,14 +36,15 @@ public class Search_Runner {
        
        
     public Search_Runner(int [][] matrix,int n) {
-        OpenList=new Hashtable<>(1000);
-        CloseList=new Hashtable<>(1000);
+        OpenList=new Hashtable<>(1000000);
+        CloseList=new Hashtable<>(1000000);
         priorityQueue=new PriorityQueue(1000000, new MyComparator());
         initialState=new State(matrix, n);
         finalState=new State(n);
         finalState.printstate();
         this.squaresize=n;
-        MaxNodeExpanded=1000000;
+        MaxNodeExpanded=10000000;
+        HashingSet=new HashSet<State>();
         
         
     }
@@ -95,7 +97,52 @@ public class Search_Runner {
     int Linear_Conflicts(State s)
     {
         int result=Manhattan_Distance(s);
-        
+        int cnt=0;
+        for(int i=1;i<=s.size;i++)
+        {
+            for (int j = 1; j <=s.size; j++)
+            {
+                if(s.matrix[i][j]== 0)
+                {
+                    //System.out.println("do here");
+                    continue;
+                }
+                Coord t=getpos(s.matrix[i][j]);
+                if(t.x==i)
+                {
+                    for(int k=j+1;k<=s.size;k++)
+                    {
+                        if(s.matrix[i][k] == 0)
+                        {
+                            continue;
+                        }
+                        Coord ta=getpos(s.matrix[i][k]);
+                        if(ta.x==t.x && ta.y<t.y)
+                        {
+                            cnt++;
+                        }
+                    }
+                }
+                if(t.y==j)
+                {
+                    for(int k=i+1;k<=s.size;k++)
+                    {
+                        if(s.matrix[k][j] == 0)
+                        {
+                            continue;
+                        }
+                        Coord tb=getpos(s.matrix[k][j]);
+                        if(tb.y==t.y && tb.x<t.x)
+                        {
+                            cnt++;
+                        }
+                    }
+                }
+
+                
+            }
+        }
+        result=result+2*cnt;
         return result;
     }
     int HeuristicsValue(State s)
@@ -113,17 +160,21 @@ public class Search_Runner {
     }
     public Coord findzero(State s)
     {
-        Coord x=null;
+        Coord x = null;
         for(int i=1;i<=s.size;i++)
         {
             for(int j=1;j<=s.size;j++)
             {
                 //System.out.println(i+" "+j+" "+s.matrix[i][j]);
-                if((s.matrix[i][j]-0)==0)
+                if(s.matrix[i][j] != 0)
                 {
                     
                     //System.out.println("Find Zero at:"+i+" "+j);
-                    x= new Coord(i, j);
+                }
+                else
+                {
+                    //System.out.println("Find Zero at:"+i+" "+j);
+                    x=new Coord(i, j);
                 }
             }
         }
@@ -144,6 +195,8 @@ public class Search_Runner {
     
     Node Search()
     {
+//        int init_h_cost=HeuristicsValue(initialState);
+//        System.out.println("Initial Heuristics Value: "+ init_h_cost);
         int inv=initialState.CountInversionHelper();
         if( (this.squaresize % 2) == 0)
         {
@@ -180,6 +233,7 @@ public class Search_Runner {
         int init_h_cost=HeuristicsValue(initialState);
         System.out.println("Initial Heuristics Value: "+ init_h_cost);
         Node node=new Node(initialState,0,init_h_cost);
+        //Node node=new Node(initialState,0,0);
         NodeExpanded=0;
         NodeExplored=0;
         node.parent=null;
@@ -187,11 +241,19 @@ public class Search_Runner {
         priorityQueue.add(node);
         OpenList.clear();
         CloseList.clear();
-        OpenList.put(initialState, 0);
+        HashingSet.clear();
+        //OpenList.put(initialState, 0);
+        HashingSet.add(initialState);
+        
         while(!priorityQueue.isEmpty())
         {
             //System.out.println("Rayhan");
             NodeExpanded++;
+            if(NodeExpanded%1000000 == 0)
+            {
+                System.out.println(NodeExpanded);
+            }
+            
             if(NodeExpanded>MaxNodeExpanded)
             {
                 System.out.println("MaxLimit Exceeded with: "+NodeExpanded);
@@ -201,10 +263,13 @@ public class Search_Runner {
             //current.nodeState.printstate();
             
             Coord coo=findzero(current.nodeState);
+            //current.nodeState.printstate();
             //System.out.println("Find Zero:"+coo.x+" "+coo.y);
             int x,y;
             for(int k=0;k<4;k++)
             {
+//                System.out.println(coo.y);
+//                System.out.println(coo.x);
                 x=coo.x+dx[k];
                 y=coo.y+dy[k];
                 //System.out.println(x+","+y);
@@ -216,29 +281,32 @@ public class Search_Runner {
                 State childState=new State(current.nodeState,coo.x,coo.y,x,y);
                 
                 NodeExplored++;
-                if(CloseList.containsKey(childState) || OpenList.containsKey(childState))
+//                if(CloseList.containsKey(childState) || OpenList.containsKey(childState))
+//                {
+//                    continue;
+//                }
+                if(HashingSet.contains(childState))
                 {
                     continue;
                 }
                 int temp_h_cost=HeuristicsValue(childState);
                 Node temp=new Node(childState, (current.g_cost)+1,temp_h_cost);
+                //Node temp=new Node(childState, (current.g_cost)+1,0);
                 //temp.nodeState.printstate();
                 temp.parent=current;
                 priorityQueue.add(temp);
-                OpenList.put(childState, 0);
+                //OpenList.put(childState, 0);
+                HashingSet.add(childState);
                 if(temp.nodeState.equals(finalState))
                 {
                     Result =temp;
-                    System.out.print("Node Expanded for BFS:");
+                    System.out.print("Node Expanded for A * SEARCH:");
                     System.out.println(this.NodeExpanded);
-                    System.out.println("Node Explored for BFS:" + NodeExplored + "\n");
+                    System.out.println("Node Explored for A * SEARCH:" + NodeExplored + "\n");
                     //System.out.println("Milliseconds!!");
                     return Result;
                 }
             }
-            CloseList.put(current.nodeState, 0);
-            OpenList.remove(current.nodeState, 0);
-            
             
         }
         System.out.println("But No Solution Found!!");

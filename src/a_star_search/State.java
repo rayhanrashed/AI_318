@@ -5,6 +5,8 @@
  */
 package a_star_search;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Rayhan
@@ -33,10 +35,7 @@ public class State {
         size=s.size;
         for(int k=1;k<=size;k++)
         {
-            for(int l=1;l<=size;l++)
-            {
-                matrix[k][l]=s.matrix[k][l];
-            }
+            matrix[k]=Arrays.copyOf(s.matrix[k], s.matrix[k].length);
         }
         int temp=matrix[i][j];
         matrix[i][j]=matrix[x][y];
@@ -46,10 +45,7 @@ public class State {
     State(int[][] matrix, int n) {
         this.matrix=new int[n+2][n+2];
         for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                
-                   this.matrix[i][j]=matrix[i][j];
-            }
+            this.matrix[i]=Arrays.copyOf(matrix[i], matrix[i].length);
         }
         this.size=n;
     }
@@ -114,7 +110,9 @@ public class State {
     @Override
     public int hashCode()
     {
-        return CountInversionHelper();
+        int deep=Arrays.deepHashCode(this.matrix);
+        return Math.abs(deep);
+        //return deep;
     }
     
     void printstate()

@@ -16,11 +16,11 @@ public class temp {
     PriorityQueue<Node> priorityQueue;
     public void func()
     {
-        priorityQueue=new PriorityQueue<>(100000, new MyComparator());
-        priorityQueue.add(new Node(null,12));
-        priorityQueue.add(new Node(null,12));
-        priorityQueue.add(new Node(null,12));
-        priorityQueue.add(new Node(null,12));
+//        priorityQueue=new PriorityQueue<>(100000, new MyComparator());
+//        priorityQueue.add(new Node(null,12));
+//        priorityQueue.add(new Node(null,12));
+//        priorityQueue.add(new Node(null,12));
+//        priorityQueue.add(new Node(null,12));
     }
 
     
