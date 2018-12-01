@@ -26,7 +26,7 @@ public class A_Star_Search {
         int n;
         File file = new File("inputs.txt");
         Scanner in;
-
+        boolean path=false;
         in = new Scanner(file);
         n=in.nextInt();
         for (int i = 1; i <= n; i++) {
@@ -53,15 +53,17 @@ public class A_Star_Search {
             Search_Runner sr = new Search_Runner(matrix, n);
             sr.heuristics_index=i;
             State s=new State(sr.initialState.matrix,n);
-            System.out.println(s.hashCode());
-            System.out.println(sr.initialState.hashCode());
+            //System.out.println(s.hashCode());
+            //System.out.println(sr.initialState.hashCode());
             Node Result = sr.Search();
             if (Result == null) {
                 System.out.println("There");
             } else {
                 System.out.println("Result: " + Result.f_cost + " " + Result.g_cost + " " + Result.h_cost);
-                sr.printpath(Result);
-
+                if(path)
+                {
+                    sr.printpath(Result);
+                }
             }
         }
         

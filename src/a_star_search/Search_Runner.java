@@ -41,7 +41,7 @@ public class Search_Runner {
         priorityQueue=new PriorityQueue(1000000, new MyComparator());
         initialState=new State(matrix, n);
         finalState=new State(n);
-        finalState.printstate();
+        //finalState.printstate();
         this.squaresize=n;
         MaxNodeExpanded=10000000;
         HashingSet=new HashSet<State>();
@@ -296,7 +296,7 @@ public class Search_Runner {
                 temp.parent=current;
                 priorityQueue.add(temp);
                 //OpenList.put(childState, 0);
-                HashingSet.add(childState);
+                //HashingSet.add(childState);
                 if(temp.nodeState.equals(finalState))
                 {
                     Result =temp;
@@ -307,6 +307,7 @@ public class Search_Runner {
                     return Result;
                 }
             }
+            HashingSet.add(current.nodeState);
             
         }
         System.out.println("But No Solution Found!!");
